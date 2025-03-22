@@ -1,5 +1,57 @@
 # GameVault Backend Server Changelog
 
+## 14.1.1
+
+### Changes
+
+- Implement latest IGDB API and automatic model generation
+- Fix Special Game Editons not being found
+- [#475](https://github.com/Phalcode/gamevault-app/issues/475) Improved Partial File Downloads to be much faster
+
+### Thanks
+
+- @s-crypt
+- @magne4000
+- @Omni_Noesis
+- @Sixdd6
+
+## 14.1.0
+
+### Changes
+
+- [#462](https://github.com/Phalcode/gamevault-backend/issues/462) Added filter options for developers and publishers.
+
+### Thanks
+
+- @ramblepaw
+
+## 14.0.0
+
+### Breaking Changes & Migration
+
+- The `DELETE /api/v1/progress/:progress-id` and `GET /api/v1/progress/:progress-id` endpoints are deprecated: **Use `DELETE /user/:user_id/game/:game_id` and `GET /user/:user_id/game/:game_id` instead**. The deprecated endpoints will be removed in v15.0.0.
+
+- Implemented Support for Savefile Uploads & Downloads: **If you want to use this feature, mount a folder to `/savefiles` and set `SAVEFILES_ENABLED` to true.**
+
+### Changes
+
+- [#339](https://github.com/Phalcode/gamevault-backend/issues/339) Added option to disable the landing page: **Set `SERVER_LANDING_PAGE_ENABLED` to false if you want to disable the landing page.**
+- [#469](https://github.com/Phalcode/gamevault-app/issues/469) IGDB Game Search Results now contain a description.
+
+### Thanks
+
+- @Toylerrr
+- @RobinDadswell
+- Our Early Access Testers
+
+## 13.1.3
+
+### Changes
+
+- Fixed file path validation crashing the server in certain circumstances.
+- Added Symlink Following to the filewatcher
+- Added Latest PGSQL Client to the image.
+
 ## 13.1.2
 
 ### Changes

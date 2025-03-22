@@ -27,7 +27,6 @@ import { MetadataService } from "../metadata/metadata.service";
 import mock from "./games.mock";
 import { GamesService } from "./games.service";
 import { GamevaultGame } from "./gamevault-game.entity";
-import ByteRangeStream from "./models/byte-range-stream";
 import { File } from "./models/file.model";
 import { GameExistence } from "./models/game-existence.enum";
 import { GameType } from "./models/game-type.enum";
@@ -59,12 +58,13 @@ export class FilesService implements OnApplicationBootstrap {
       depth: configuration.GAMES.SEARCH_RECURSIVE ? undefined : 0,
       ignorePermissionErrors: true,
       ignoreInitial: true,
+      followSymlinks: true,
       alwaysStat: true,
       awaitWriteFinish: true,
     })
-      .on("add", this.index)
-      .on("change", this.index)
-      .on("unlink", this.index)
+      .on("add", (path, stats) => this.index(path, stats))
+      .on("change", (path, stats) => this.index(path, stats))
+      .on("unlink", (path, stats) => this.index(path, stats))
       .on("error", (error) =>
         this.logger.error({ message: "Error in Filewatcher.", error }),
       );
@@ -645,9 +645,6 @@ export class FilesService implements OnApplicationBootstrap {
       );
     }
 
-    // Read the file and apply speed limit if necessary.
-    let file: Readable = createReadStream(fileDownloadPath);
-
     // Apply range header if provided otherwise returns the entire file
     const range = this.calculateRange(
       rangeHeader,
@@ -658,9 +655,12 @@ export class FilesService implements OnApplicationBootstrap {
       rangeHeader,
       range,
     });
-    file = file.pipe(
-      new ByteRangeStream(BigInt(range.start), BigInt(range.end)),
-    );
+
+    // Read the file and apply speed limit if necessary.
+    let file: Readable = createReadStream(fileDownloadPath, {
+      start: range.start,
+      end: range.end,
+    });
 
     response.setHeader("X-Download-Size", range.size);
 
